@@ -17,7 +17,7 @@ In this problem statement, the logs are created with a specific schema
 
 Path:TimeStamp:UserId
 
-The challenge is to consolidate these logs and summarize by printing user ids of N distinct path.
+The challenge is to consolidate these logs and summarize by printing user ids of atleast N distinct path.
  
 ### Assumption
 ### Design
