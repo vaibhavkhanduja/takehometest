@@ -116,7 +116,7 @@ public class FileEngine {
         System.out.println("--------------------------------------------------------------");
         System.out.println(" Program reads values from a large file and find userid of the " +
                            " N distinct paths.");
-        System.out.println(" FileEngine -f <filePath> -n <size> -o <out directory>");
+        System.out.println(" FileEngine -f <filePath> -n <minimum no of rows> -o <out directory>");
         System.out.println("--------------------------------------------------------------");
     }
 
@@ -156,7 +156,7 @@ public class FileEngine {
         arguments = processCommandLineArgs(args);
         Path input = Paths.get(arguments.getOrDefault(infile, defaultInFile));
         String output = arguments.getOrDefault(outDir,
-                                     defaultOutDirectory + defaultOutFile);
+                                     defaultOutDirectory) + defaultOutFile;
         int size = Integer.valueOf(arguments.getOrDefault(noOfRows, defaultNoOfRows));
         try {
             Stream<String> lines = Files.lines(input);

@@ -8,47 +8,47 @@ import org.junit.Test;
 public class FileManagerTest {
 
     @Before
-    void setup() {
+    public void setup() {
 
     }
 
     @After
-    void cleanup() {
+    public void cleanup() {
 
     }
 
     @Test
-    void testWrite() {
+    public void testWrite() {
 
     }
 
     @Test
-    void testGetOrderedFileList() {
+    public void testGetOrderedFileList() {
 
     }
 
     @Test
-    void testPrintFileContents() {
+    public void testPrintFileContents() {
 
     }
 
     @Test
-    void testCleanUP() {
+    public void testCleanUP() {
 
     }
 
     @Test
-    void testWriteToFile() {
+    public void testWriteToFile() {
 
     }
 
     @Test
-    void testPrintExternalContents() {
+    public void testPrintExternalContents() {
 
     }
 
     @Test
-    void testPrintInternalStorage() {
+    public void testPrintInternalStorage() {
 
     }
 
