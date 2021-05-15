@@ -5,8 +5,8 @@ The aim of the work to solve for coding challenge presented as part of interview
 https://gist.github.com/gianm/bfa7e4abebfb0da6346b
 
 ## Solution Proposed
-The coding challenge presents with a large file with the schema
-<timestamp>:<Path>:<userID>
+The coding challenge presents with a large file with the schema \
+timestamp:Path:userID
  
 The aim is write out a program that scan through the log file of similar schema, of any size and presents output of paths along with their userid which have been  alteast visited N times by a user.
 
