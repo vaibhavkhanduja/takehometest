@@ -40,12 +40,8 @@ The flow of code runs as following
  UserID: 36407 File Paths: [/item/72820, /item/46820, /item/69298, /item/85655, /item/22836, /item/67525, /item/68306, /item/79568, /item/25487, /item/73350, /item/10021, /item/42545]
 UserID: 36408 File Paths: [/item/95512, /item/24623, /item/92043, /item/63295, /item/42157, /item/82217, /item/37317, /item/13704, /item/83574, /item/78765, /item/90961, /item/18840, /item/19745, /item/33248]
  ```
+ ### Resource Comsuption
  ----------------------
-### Pending Work 
-
-A short description of how to build and run your program
-The general approach you're taking, and why you chose it
-Any alternate approaches you considered, and why you didn't choose them
-A brief analysis of the resource needs and performance of your chosen approach
-Any assumptions you made about the properties of the dataset
-Any improvements you could make in the future
+### Other Comments
+#### Alternative Approach
+#### Further Improvements 
