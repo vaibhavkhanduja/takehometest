@@ -11,9 +11,11 @@ timestamp:Path:userID
 The aim is write out a program that scan through the log file of similar schema, of any size and presents output of paths along with their userid which have been  alteast visited N times by a user.
 
 ### Approach
-The challenge is attempted in java as a Maven project. An in-memory data structure of form hashtable is maintained as records from the file are read into asynchronously. The hard table keys are user id and values are set of unique file paths visited by these user ids. 
+The challenge is attempted in java as a Maven project. An in-memory data structure hashtable is maintained with records from the file are read asynchronously. The hash table keys are userids' and values' are set of unique file paths visited by these user ids. Such data structure ensures, userID are read only once and their visited corresponding paths are unique an be maintained in O(1) complexity.
 
-The file is read using asynchronous nio library where is link to the stream of records is obtained. These streams is processed line by line reading the records into in memmory hash table called "storage". As file could grow very large, maintaining this in memory could be inefficient. Priordically, hash table size is checked against the memory consumed and is dumped onto underlying file storage. The design of file storage is done keeping in mind
+The file is read using asynchronous nio library where a link to the stream of records is obtained. These streams is processed line by line reading the records into in memmory hash table called "storage". The nio library ensures the records are lazily and not in memory unless accessed. 
+
+As file could grow very large, maintaining this in memory could be inefficient. Priordically, hash table size is checked against the memory consumed (not very accurate) and is dumped onto underlying file storage. The design of file storage is done keeping in mind
 
 - Fast random access to the file system having individual files of userid, having userid as the file-name and contents as the paths. This represents the in-memory hash table on disk. The updates are faster too as small size files are accessed.
 - Accessing larger files before smaller, thus ensuring getting records which would meet the criteria of atleast N first
@@ -35,7 +37,7 @@ The flow of code runs as following
     Program reads values from a large file and find userid of the  N distinct paths. \
     FileEngine -f <filePath> -n <minimum no of rows> -o <out directory>
   * for e.g. java -jar ./target/takehometest-1.0-jar-with-dependencies.jar -f /Users/VK/takehometest/access.log -n 10 -o /tmp/ \
-    Check for file under /tmp/ -> output.log
+    Check for file under /tmp/ -> output.log. An example output is shown below
  ```
  UserID: 36407 File Paths: [/item/72820, /item/46820, /item/69298, /item/85655, /item/22836, /item/67525, /item/68306, /item/79568, /item/25487, /item/73350, /item/10021, /item/42545]
 UserID: 36408 File Paths: [/item/95512, /item/24623, /item/92043, /item/63295, /item/42157, /item/82217, /item/37317, /item/13704, /item/83574, /item/78765, /item/90961, /item/18840, /item/19745, /item/33248]
@@ -50,3 +52,4 @@ UserID: 36408 File Paths: [/item/95512, /item/24623, /item/92043, /item/63295, /
  * High speed storage for e.g. NvME flash disk would help in file processing.
  * Input file stored across cluster can help in processing chunks of data in parallel
  * The itermediate files can be replaced with key/value storage (flash disk) or key/value db over commodity storage can help speed up things faster
+ * Effective mechanism 
