@@ -33,10 +33,10 @@ The flow of code runs as following
 * Git clone the project
 * cd src; mvn clean compile assembly:single
 * To execute
-  * java -jar ./target/takehometest-1.0-jar-with-dependencies.jar \
+  * ```java -jar ./target/takehometest-1.0-jar-with-dependencies.jar \
     Program reads values from a large file and find userid of the  N distinct paths. \
-    FileEngine -f <filePath> -n <minimum no of rows> -o <out directory>
-  * for e.g. java -jar ./target/takehometest-1.0-jar-with-dependencies.jar -f /Users/VK/takehometest/access.log -n 10 -o /tmp/ \
+    FileEngine -f <filePath> -n <minimum no of rows> -o <out directory>```
+  * for e.g.``` java -jar ./target/takehometest-1.0-jar-with-dependencies.jar -f /Users/VK/takehometest/access.log -n 10 -o /tmp/``` \
     Check for file under /tmp/ -> output.log. An example output is shown below
  ```
  UserID: 36407 File Paths: [/item/72820, /item/46820, /item/69298, /item/85655, /item/22836, /item/67525, /item/68306, /item/79568, /item/25487, /item/73350, /item/10021, /item/42545]
