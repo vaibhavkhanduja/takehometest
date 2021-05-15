@@ -52,4 +52,4 @@ UserID: 36408 File Paths: [/item/95512, /item/24623, /item/92043, /item/63295, /
  * High speed storage for e.g. NvME flash disk would help in file processing.
  * Input file stored across cluster can help in processing chunks of data in parallel
  * The itermediate files can be replaced with key/value storage (flash disk) or key/value db over commodity storage can help speed up things faster
- * Effective mechanism 
+ * Effective memory check mechanism
