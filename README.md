@@ -44,4 +44,11 @@ UserID: 36408 File Paths: [/item/95512, /item/24623, /item/92043, /item/63295, /
  ----------------------
 ### Other Comments
 #### Alternative Approach
-#### Further Improvements 
+ The key challenge in the approach is the speed of processing input file and in-memory usage. Reading a large file sequentially can be very time consuming thus an approach which can read parts of the file parallelly would help. The processing of the file, can be designed in phases where
+ * The first phase reads thru parts of the file and creates small sets of files, with name as userid. Since the file is processed parallely, a file is never processed by two threads/programs. In situations two threads/precess find entries for same userid, a duplicated file with additional prefix (_#) is created. This ensures file is always processed by one process and not by two.
+ * The second phases runs thru the list of the files and merges the files with same prefix i.e userid.
+ * The third phase opens these files sequentially and summarizes the output.
+#### Further Improvements
+ * High speed storage for e.g. NvME flash disk would help in file processing.
+ * Input file stored across cluster can help in processing chunks of data in parallel
+ * The itermediate files can be replaced with key/value storage (flash disk) or key/value db over commodity storage can help speed up things faster
