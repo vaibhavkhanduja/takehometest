@@ -4,78 +4,83 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.HashSet;
 
 public class FileEngine {
 
-    private HashMap<String, String> storage = new HashMap<>();
+    /**
+     * Default values some command line parameters.
+     */
+    private final String infile = "infile";
+    private final String defaultInFile = "access.log";
+    private final String defaultOutFile = "output.log";
+    private final String defaultOutDirectory = "/tmp/";
+    private final String outDir = "outdir";
+    private final String noOfRows = "no_of_rows";
+    private final String defaultNoOfRows = "10";
+
+    // Internal Storage Used for finding records. The key is userid
+    // The value is set of unique paths
+    private HashMap<String, HashSet<String>> storage = new HashMap<>();
+    // Command Line Arguments sent it
+    private HashMap<String, String> arguments = new HashMap<>();
+    // Default value of max storage size
     private long maxStorageSize = 0;
+    // boolean to understand we exceeded memory and dumped records.
+    private boolean wasStorageDumped = false;
 
-    public static final String infile = "infile";
-    public static final String defaultInFile = "access.log";
-    public static final String defaultOutFile = "/tmp/outfile.txt";
-    public static final String outfile = "outfile";
-    public static final String noOfRows = "no_of_rows";
-    public static final String defaultNoOfRows = "10";
-    public static final Integer defaultLineSize = 100;
-
-
-    private void printTopN(int n, Path output)  {
-        try {
-            Files.createFile(output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (Entry<String, String> entry : storage.entrySet()) {
-            System.out.println("Path : " + entry.getKey() + " " + "User Id " + entry.getValue());
-            try {
-                Files.writeString(output, "Path : " + entry.getKey()
-                                           + " " + "User Id " + entry.getValue() + System.lineSeparator(),
-                                 StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void checkAndClearMem() {
-         // TBD Get right memory size
-        if (storage.size() >= maxStorageSize) {
-            FileManager.writeToFile(storage);
-            storage.clear();
-            storage = null;
-            System.gc();
-            storage = new HashMap<>();
-        }
-    }
-
-    private void process(String line) {
-        //Check for storage if it has reached limit
-        // We dump the records in their individual files
-        // and clean up memory.
-        checkAndClearMem();
-        Log log = new Log(line);
-        if (storage.containsKey(log.path)) {
-            String userId = storage.get(log.path);
-            userId += ",";
-            userId += log.userID;
-            storage.put(log.path, userId);
+    /**
+     * Print the storage in the a file
+     * @param n
+     * @param output
+     */
+    private void print(int n, String output)  {
+        if (wasStorageDumped) {
+            clearStorage();
+            FileManager.printExternalContents(n, output);
+            FileManager.cleanUP();
         } else {
-            storage.put(log.path, log.userID);
+            FileManager.printInternalStorage(n, storage, output);
         }
     }
-    public static void printUsage() {
-        System.out.println("--------------------------------------------------------------");
-        System.out.println(" Program reads values from a large file and find userid of the " +
-                           " N distinct paths.");
-        System.out.println(" FileEngine -f <filePath> -n <size>");
-        System.out.println("--------------------------------------------------------------");
+
+    /**
+     * Clear in memory storage
+     */
+    private void clearStorage() {
+        FileManager.writeToFile(storage);
+        storage.clear();
+        storage = null;
+        System.gc();
+        storage = new HashMap<>();
     }
 
+    /**
+     * Check and clear storage
+     */
+    private void checkAndClearMem() {
+        if (storage.size() >= maxStorageSize) {
+            clearStorage();
+            wasStorageDumped = true;
+        }
+    }
+
+    /**
+     * Utility function to get chuck size
+     * @param lineSize
+     * @return
+     */
+    private long getChunkSize(int lineSize) {
+        return (long)estimateAvailableMemory()/lineSize;
+    }
+
+    /**
+     * Utility function to estimate available
+     * memory
+     * @return available memory
+     */
     private long estimateAvailableMemory() {
         System.gc();
         Runtime r = Runtime.getRuntime();
@@ -84,15 +89,48 @@ public class FileEngine {
         return presFreeMemory;
     }
 
-    public long getChunkSize(int lineSize) {
-        return (long)estimateAvailableMemory()/lineSize;
+    /**
+     * Process input string to be stored in local
+     * Storage
+     * @param line
+     */
+    private void processLine(String line) {
+        checkAndClearMem();
+        Log log = new Log(line);
+        HashSet<String> logPaths =
+                storage.containsKey(log.userID) ?
+                        storage.get(log.userID) : new HashSet<>();
+        logPaths.add(log.path);
+        storage.put(log.userID, logPaths);
     }
 
-    public Map<String, String> processCommandLineArgs(String[] args) {
-       Map<String, String> arguments = new HashMap<>();
+    /**
+     * Default Constructor
+     */
+    public FileEngine() { }
+
+    /**
+     * Print usage of the Utility
+     */
+    public static void printUsage() {
+        System.out.println("--------------------------------------------------------------");
+        System.out.println(" Program reads values from a large file and find userid of the " +
+                           " N distinct paths.");
+        System.out.println(" FileEngine -f <filePath> -n <size> -o <out directory>");
+        System.out.println("--------------------------------------------------------------");
+    }
+
+
+    /**
+     * Process Command Line Arguments
+     * @param args
+     * @return
+     */
+    public HashMap<String,String> processCommandLineArgs(String[] args) {
+       HashMap<String, String> arguments = new HashMap<>();
        for (int i = 0; i < args.length; i++) {
            switch (args[i]) {
-               case "-i":
+               case "-f":
                    i +=1;
                    arguments.put(infile, args[i]);
                    break;
@@ -102,37 +140,42 @@ public class FileEngine {
                    break;
                case "-o":
                    i += 1;
-                   arguments.put(outfile, args[i]);
+                   arguments.put(outDir, args[i]);
                    break;
            }
        }
        return arguments;
     }
 
-    public FileEngine() { }
 
-    public void processFile(Path input, Path output, int size) {
+    /**
+     * Process incoming arguments and file
+     * @param args
+     */
+    public void process(String[] args) {
+        arguments = processCommandLineArgs(args);
+        Path input = Paths.get(arguments.getOrDefault(infile, defaultInFile));
+        String output = arguments.getOrDefault(outDir,
+                                     defaultOutDirectory + defaultOutFile);
+        int size = Integer.valueOf(arguments.getOrDefault(noOfRows, defaultNoOfRows));
         try {
-            Stream<String> lines = Files.lines(input).parallel();
+            Stream<String> lines = Files.lines(input);
             maxStorageSize = getChunkSize(size);
-            lines.forEach(line -> process(line));
-            System.out.println("Storage size " + storage.size());
-            printTopN(Math.min(storage.size(), size), output);
+            lines.forEach(line -> processLine(line));
+            print(size, output);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public static void main(String...args) {
+
         if (args.length < 4) {
             FileEngine.printUsage();
             System.exit(-1);
         }
+
         FileEngine fe = new FileEngine();
-        Map<String, String> arguments = fe.processCommandLineArgs(args);
-        Path input = Paths.get(arguments.getOrDefault(FileEngine.infile, defaultInFile));
-        Path output = Paths.get(arguments.getOrDefault(FileEngine.outfile, FileEngine.defaultOutFile));
-        fe.processFile(input, output,
-                Integer.valueOf(arguments.getOrDefault(FileEngine.noOfRows, FileEngine.defaultNoOfRows)));
+        fe.process(args);
     }
 }
