@@ -1,7 +1,7 @@
 # Druid Coding challenge - analyzing user sessions
 
 ## What we are doing?
-The aim of the work to solve for coding challenge presented as part of interview process at Imply. The details of the coding challenge can be obtained here
+The aim of the work to solve for coding challenge presented as part of interview process at Imply. The details of the coding challenge can be found here
 https://gist.github.com/gianm/bfa7e4abebfb0da6346b
 
 ## Solution Proposed
