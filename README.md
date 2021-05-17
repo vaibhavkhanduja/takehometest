@@ -31,7 +31,7 @@ The flow of code runs as following
 
 ### How to test
 * Git clone the project
-* cd src; mvn clean compile assembly:single
+* ```cd src; mvn clean compile assembly:single```
 * To execute
   * ```java -jar ./target/takehometest-1.0-jar-with-dependencies.jar \
     Program reads values from a large file and find userid of the  N distinct paths. \
